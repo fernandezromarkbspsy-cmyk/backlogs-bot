@@ -1,0 +1,47 @@
+app = "backlogs-bot"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "10s"
+  method = "GET"
+  path = "/healthz"
+  protocol = "http"
+
+[env]
+  PORT = "8080"
+  SHEET_ID = "1_voFSQBXWh5G5IwBZnt19FE1ro9PpHGOGxtlJscnuzA"
+  TAB_NAME = "Compliance Tracker"
+  CAPTURE_RANGE = "A1:X80"
+  BAU Backlogs Summary_TAB = "BAU Backlogs Summary"
+  BOT_NAME = "Backlogs Bot"
+  REPORT_LINK = "https://docs.google.com/spreadsheets/d/1_voFSQBXWh5G5IwBZnt19FE1ro9PpHGOGxtlJscnuzA/edit?gid=1804176550#gid=1804176550"
+  APP_TIMEZONE = "Asia/Manila"
+  ENABLE_CHANGE_SENDS = "true"
+  WATCH_TAB = "BAU Backlogs Summary"
+  WATCH_CELL = "G8"
+  WATCH_POLL_SECONDS = "5"
+  CHANGE_SETTLE_SECONDS = "7"
+  ENABLE_SCHEDULED_SENDS = "false"
+  IMAGE_FORMAT = "png"
+  PNG_DPI = "300"
+  PNG_MAX_WIDTH = "2400"
+  WORK_DIR = "/app/tmp"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
