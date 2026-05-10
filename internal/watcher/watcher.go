@@ -224,11 +224,11 @@ func (w *Watcher) alert(ctx context.Context) error {
 		return fmt.Errorf("no SeaTalk group IDs found in %s!A2:A", w.cfg.BotConfigTab)
 	}
 
-	pending, err := w.cellFromTab(ctx, "enrroute_consodata", "B2")
+	pending, err := w.cellFromTab(ctx, "BAU Backlogs Summary", "B2")
 	if err != nil {
 		return err
 	}
-	avgWT, err := w.cellFromTab(ctx, "enrroute_consodata", "B3")
+	avgWT, err := w.cellFromTab(ctx, "BAU Backlogs Summary", "B3")
 	if err != nil {
 		return err
 	}
