@@ -9,17 +9,19 @@ import (
 )
 
 type Config struct {
-	SheetID      string
-	TabName      string
-	CaptureRange string
-	BotConfigTab string
-	BotName      string
-	ReportLink   string
-	Timezone     string
-	WatchTab     string
-	WatchCell    string
-	PollInterval time.Duration
-	SettleDelay  time.Duration
+	SheetID            string
+	TabName            string
+	CaptureRange       string
+	SecondTabName      string
+	SecondCaptureRange string
+	BotConfigTab       string
+	BotName            string
+	ReportLink         string
+	Timezone           string
+	WatchTab           string
+	WatchCell          string
+	PollInterval       time.Duration
+	SettleDelay        time.Duration
 }
 
 type Sheets interface {
@@ -216,6 +218,14 @@ func (w *Watcher) alert(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	secondGID, err := w.sheets.SheetGID(ctx, w.cfg.SecondTabName)
+	if err != nil {
+		return err
+	}
+	secondImage, err := w.renderer.Capture(ctx, w.cfg.SheetID, secondGID, w.cfg.SecondCaptureRange, token)
+	if err != nil {
+		return err
+	}
 	groupIDs, err := w.sheets.GroupIDs(ctx, w.cfg.BotConfigTab)
 	if err != nil {
 		return err
@@ -237,12 +247,20 @@ func (w *Watcher) alert(ctx context.Context) error {
 	title := fmt.Sprintf("Outbound Pending for Dispatch\nAs of %s", now.Format("3:04 PM Jan-02"))
 	description := fmt.Sprintf("**Pending Request + WT**\nPending = %s | Ave. WTime: %s", pending, avgWT)
 
+	secondTitle := "SOL InterIsland Pending for Dispatch"
+	secondDescription := fmt.Sprintf("As of %s", now.Format("3:04 PM Jan-02"))
+
 	for _, groupID := range groupIDs {
 		if err := w.seatalk.SendInteractiveCard(ctx, groupID, title, description, image, w.cfg.ReportLink, true); err != nil {
 			log.Printf("send interactive card to %s: %v", groupID, err)
 			continue
 		}
 		log.Printf("sent interactive card to %s", groupID)
+		if err := w.seatalk.SendInteractiveCard(ctx, groupID, secondTitle, secondDescription, secondImage, w.cfg.ReportLink, true); err != nil {
+			log.Printf("send second interactive card to %s: %v", groupID, err)
+			continue
+		}
+		log.Printf("sent second interactive card to %s", groupID)
 	}
 	return nil
 }

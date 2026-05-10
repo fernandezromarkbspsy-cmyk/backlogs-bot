@@ -37,17 +37,19 @@ func New(ctx context.Context, cfg config.Config) (*App, error) {
 		renderer: renderer,
 	}
 	a.watcher = watcher.New(watcher.Config{
-		SheetID:      cfg.SheetID,
-		TabName:      cfg.TabName,
-		CaptureRange: cfg.CaptureRange,
-		BotConfigTab: cfg.BotConfigTab,
-		BotName:      cfg.BotName,
-		ReportLink:   cfg.ReportLink,
-		Timezone:     cfg.Timezone,
-		WatchTab:     cfg.WatchTab,
-		WatchCell:    cfg.WatchCell,
-		PollInterval: time.Duration(cfg.WatchPollSeconds) * time.Second,
-		SettleDelay:  time.Duration(cfg.ChangeSettleSeconds) * time.Second,
+		SheetID:            cfg.SheetID,
+		TabName:            cfg.TabName,
+		CaptureRange:       cfg.CaptureRange,
+		SecondTabName:      cfg.SecondTabName,
+		SecondCaptureRange: cfg.SecondCaptureRange,
+		BotConfigTab:       cfg.BotConfigTab,
+		BotName:            cfg.BotName,
+		ReportLink:         cfg.ReportLink,
+		Timezone:           cfg.Timezone,
+		WatchTab:           cfg.WatchTab,
+		WatchCell:          cfg.WatchCell,
+		PollInterval:       time.Duration(cfg.WatchPollSeconds) * time.Second,
+		SettleDelay:        time.Duration(cfg.ChangeSettleSeconds) * time.Second,
 	}, sheetsClient, seatalkClient, renderer)
 	return a, nil
 }

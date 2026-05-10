@@ -19,6 +19,8 @@ type Config struct {
 	SheetID               string
 	TabName               string
 	CaptureRange          string
+	SecondTabName         string
+	SecondCaptureRange    string
 	BotConfigTab          string
 	BotName               string
 	ReportLink            string
@@ -45,6 +47,8 @@ func Load() (Config, error) {
 		SheetID:              getenv("SHEET_ID", "1_voFSQBXWh5G5IwBZnt19FE1ro9PpHGOGxtlJscnuzA"),
 		TabName:              getenv("TAB_NAME", "BAU Backlogs Summary"),
 		CaptureRange:         getenv("CAPTURE_RANGE", "D2:S62"),
+		SecondTabName:        getenv("SECOND_TAB_NAME", "SOLIIS & MINDANAO"),
+		SecondCaptureRange:   getenv("SECOND_CAPTURE_RANGE", "J2:S43"),
 		BotConfigTab:         getenv("BAU Backlogs Summary_TAB", "BAU Backlogs Summary"),
 		BotName:              getenv("BOT_NAME", "Inbound Updates"),
 		ReportLink:           getenv("REPORT_LINK", "https://docs.google.com/spreadsheets/d/1_voFSQBXWh5G5IwBZnt19FE1ro9PpHGOGxtlJscnuzA/edit?gid=1804176550#gid=1804176550"),
