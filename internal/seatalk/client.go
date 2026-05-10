@@ -223,7 +223,7 @@ func (c *Client) SendImage(ctx context.Context, groupID string, imageBase64 stri
 	return err
 }
 
-func (c *Client) SendInteractiveCard(ctx context.Context, groupID, title, description, imageBase64 string, atAll bool) error {
+func (c *Client) SendInteractiveCard(ctx context.Context, groupID, title, description, imageBase64, reportLink string, atAll bool) error {
 	elements := []any{
 		map[string]any{
 			"element_type": "title",
@@ -242,6 +242,15 @@ func (c *Client) SendInteractiveCard(ctx context.Context, groupID, title, descri
 			"element_type": "image",
 			"image": map[string]any{
 				"content": imageBase64,
+			},
+		},
+		map[string]any{
+			"element_type": "button",
+			"button": map[string]any{
+				"button_type":  "redirect",
+				"text":         "View Report Link",
+				"mobile_link":  map[string]any{"type": "web", "path": reportLink},
+				"desktop_link": map[string]any{"type": "web", "path": reportLink},
 			},
 		},
 	}

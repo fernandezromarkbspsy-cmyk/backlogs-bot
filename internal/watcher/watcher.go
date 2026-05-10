@@ -32,7 +32,7 @@ type Sheets interface {
 type SeaTalk interface {
 	SendGroupText(context.Context, string, string, bool) error
 	SendImage(context.Context, string, string) error
-	SendInteractiveCard(context.Context, string, string, string, string, bool) error
+	SendInteractiveCard(context.Context, string, string, string, string, string, bool) error
 }
 
 type Renderer interface {
@@ -234,11 +234,11 @@ func (w *Watcher) alert(ctx context.Context) error {
 	}
 
 	now := w.now()
-	title := fmt.Sprintf("Outbound Pending for Dispatch")
-	description := fmt.Sprintf("as of %s\n**Pending Request + WT**\nPending = %s\nAve. Waiting Time: %s", now.Format("3:04 PM Jan-02"), pending, avgWT)
+	title := fmt.Sprintf("Outbound Pending for Dispatch\nAs of %s", now.Format("3:04 PM Jan-02"))
+	description := fmt.Sprintf("**Pending Request + WT**\nPending = %s\nAve. Waiting Time: %s", pending, avgWT)
 
 	for _, groupID := range groupIDs {
-		if err := w.seatalk.SendInteractiveCard(ctx, groupID, title, description, image, true); err != nil {
+		if err := w.seatalk.SendInteractiveCard(ctx, groupID, title, description, image, w.cfg.ReportLink, true); err != nil {
 			log.Printf("send interactive card to %s: %v", groupID, err)
 			continue
 		}
