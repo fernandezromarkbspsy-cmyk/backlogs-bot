@@ -234,8 +234,8 @@ func (w *Watcher) alert(ctx context.Context) error {
 	}
 
 	now := w.now()
-	title := fmt.Sprintf("Outbound Pending for Dispatch as of %s", now.Format("3:04 PM Jan-02"))
-	description := fmt.Sprintf("<b>Pending Request + WT</b>\nPending = %s\nAve. Waiting Time: %s", pending, avgWT)
+	title := fmt.Sprintf("Outbound Pending for Dispatch")
+	description := fmt.Sprintf("as of %s\n**Pending Request + WT**\nPending = %s\nAve. Waiting Time: %s", now.Format("3:04 PM Jan-02"), pending, avgWT)
 
 	for _, groupID := range groupIDs {
 		if err := w.seatalk.SendInteractiveCard(ctx, groupID, title, description, image, true); err != nil {
