@@ -223,6 +223,32 @@ func (c *Client) SendImage(ctx context.Context, groupID string, imageBase64 stri
 	return err
 }
 
+func (c *Client) SendInteractiveCard(ctx context.Context, groupID, title, description, imageBase64 string, atAll bool) error {
+	elements := []any{
+		map[string]any{
+			"element_type": "title",
+			"title": map[string]any{
+				"text": title,
+			},
+		},
+		map[string]any{
+			"element_type": "description",
+			"description": map[string]any{
+				"format": 1,
+				"text":   description,
+			},
+		},
+		map[string]any{
+			"element_type": "image",
+			"image": map[string]any{
+				"content": imageBase64,
+			},
+		},
+	}
+	_, err := c.SendInteractive(ctx, groupID, elements, MessageOptions{AtAll: atAll})
+	return err
+}
+
 func (c *Client) postAuthed(ctx context.Context, url string, payload any, out any) error {
 	token, err := c.accessToken(ctx)
 	if err != nil {

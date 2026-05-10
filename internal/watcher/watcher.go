@@ -32,6 +32,7 @@ type Sheets interface {
 type SeaTalk interface {
 	SendGroupText(context.Context, string, string, bool) error
 	SendImage(context.Context, string, string) error
+	SendInteractiveCard(context.Context, string, string, string, string, bool) error
 }
 
 type Renderer interface {
@@ -222,56 +223,28 @@ func (w *Watcher) alert(ctx context.Context) error {
 	if len(groupIDs) == 0 {
 		return fmt.Errorf("no SeaTalk group IDs found in %s!A2:A", w.cfg.BotConfigTab)
 	}
-	text, err := w.alertText(ctx)
+
+	pending, err := w.cellFromTab(ctx, "enrroute_consodata", "B2")
 	if err != nil {
 		return err
 	}
-	for _, groupID := range groupIDs {
-		if err := w.seatalk.SendGroupText(ctx, groupID, text, true); err != nil {
-			log.Printf("send text to %s: %v", groupID, err)
-			continue
-		}
-		if err := w.seatalk.SendImage(ctx, groupID, image); err != nil {
-			log.Printf("send image to %s: %v", groupID, err)
-			continue
-		}
-		log.Printf("sent text and report image to %s", groupID)
-	}
-	return nil
-}
-
-func (w *Watcher) alertText(ctx context.Context) (string, error) {
-	linehaulWindow, err := w.cell(ctx, "O1")
+	avgWT, err := w.cellFromTab(ctx, "enrroute_consodata", "B3")
 	if err != nil {
-		return "", err
-	}
-	v3, err := w.cellFromTab(ctx, "enrroute_consodata", "V3")
-	if err != nil {
-		return "", err
-	}
-	v4, err := w.cellFromTab(ctx, "enrroute_consodata", "V4")
-	if err != nil {
-		return "", err
-	}
-	v5, err := w.cellFromTab(ctx, "enrroute_consodata", "V5")
-	if err != nil {
-		return "", err
+		return err
 	}
 
 	now := w.now()
-	hour := now.Hour()
-	if hour >= 8 && hour < 17 {
-		return formatDailyUpdateAlert(now), nil
+	title := fmt.Sprintf("Outbound Pending for Dispatch as of %s", now.Format("3:04 PM Jan-02"))
+	description := fmt.Sprintf("<b>Pending Request + WT</b>\nPending = %s\nAve. Waiting Time: %s", pending, avgWT)
+
+	for _, groupID := range groupIDs {
+		if err := w.seatalk.SendInteractiveCard(ctx, groupID, title, description, image, true); err != nil {
+			log.Printf("send interactive card to %s: %v", groupID, err)
+			continue
+		}
+		log.Printf("sent interactive card to %s", groupID)
 	}
-	return formatLinehaulAlert(linehaulWindow, now, v3, v4, v5), nil
-}
-
-func formatDailyUpdateAlert(now time.Time) string {
-	return fmt.Sprintf("<mention-tag target=\"seatalk://user?id=0\"/> En Route, Docked & On-Queue Update as of %s", now.Format("3:04PM"))
-}
-
-func formatLinehaulAlert(linehaulWindow string, now time.Time, v3, v4, v5 string) string {
-	return fmt.Sprintf("<mention-tag target=\"seatalk://user?id=0\"/> IB Expected Linehauls to Arrive within %s including Late Units as of %s Update.\n\n%s\n%s\n%s", linehaulWindow, now.Format("3:04PM"), v3, v4, v5)
+	return nil
 }
 
 func (w *Watcher) now() time.Time {
