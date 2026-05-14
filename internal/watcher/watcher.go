@@ -234,18 +234,9 @@ func (w *Watcher) alert(ctx context.Context) error {
 		return fmt.Errorf("no SeaTalk group IDs found in %s!A2:A", w.cfg.BotConfigTab)
 	}
 
-	pending, err := w.cellFromTab(ctx, "BAU Backlogs Summary", "B2")
-	if err != nil {
-		return err
-	}
-	avgWT, err := w.cellFromTab(ctx, "BAU Backlogs Summary", "B3")
-	if err != nil {
-		return err
-	}
-
 	now := w.now()
 	title := fmt.Sprintf("Outbound Pending for Dispatch\nAs of %s", now.Format("3:04 PM Jan-02"))
-	description := fmt.Sprintf("**Pending Request + WT**\nPending = %s | Ave. WTime: %s", pending, avgWT)
+	description := fmt.Sprintf("*Backlogs=%s", shouldSend)
 
 	secondTitle := "SOL InterIsland Pending for Dispatch"
 	secondDescription := fmt.Sprintf("As of %s", now.Format("3:04 PM Jan-02"))
